@@ -1,0 +1,27 @@
+{
+  "name": "@onehat/events",
+  "version": "1.0.0",
+  "description": "Node.js 'events' module with extra enhancements",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OneHatRepo/events.git"
+  },
+  "keywords": [
+    "JS",
+    "Events"
+  ],
+  "author": "Scott Spuler",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/OneHatRepo/events/issues"
+  },
+  "homepage": "https://github.com/OneHatRepo/events#readme",
+  "dependencies": {
+    "events": "^3.0.0",
+    "lodash": "^4.17.15"
+  }
+}
