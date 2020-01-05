@@ -2,7 +2,7 @@
   "name": "@onehat/events",
   "version": "1.0.0",
   "description": "Node.js 'events' module with extra enhancements",
-  "main": "index.js",
+  "main": "src/EventEmitter.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,8 +11,11 @@
     "url": "git+https://github.com/OneHatRepo/events.git"
   },
   "keywords": [
-    "JS",
-    "Events"
+    "js",
+    "events",
+    "eventEmitter",
+    "eventDispatcher",
+    "listeners"
   ],
   "author": "Scott Spuler",
   "license": "MIT",
