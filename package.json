@@ -17,7 +17,11 @@
     "eventDispatcher",
     "listeners"
   ],
-  "author": "Scott Spuler",
+  "author": {
+	  "name": "Scott Spuler",
+	  "company": "OneHat Technologies, LLC",
+	  "url": "https://onehat.com"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/OneHatRepo/events/issues"
