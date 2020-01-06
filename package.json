@@ -16,8 +16,8 @@
     "js",
     "events",
     "eventEmitter",
-	"eventDispatcher",
-	"relayEvents",
+    "eventDispatcher",
+    "relayEvents",
     "listeners"
   ],
   "author": {
