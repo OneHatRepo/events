@@ -3,6 +3,7 @@
   "version": "1.0.3",
   "description": "Node.js 'events' module with extra enhancements",
   "main": "dist/EventEmitter.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

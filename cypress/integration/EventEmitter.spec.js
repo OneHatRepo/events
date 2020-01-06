@@ -54,6 +54,55 @@ describe('EventEmitter', function() {
 		expect(emitted).to.be.true;
 	});
 
+	it('relayEventsFrom', function() {
+		const emitter = this.emitter,
+			origin = new EventEmitter();
+
+		// Set up relaying
+		origin.registerEvents(['foo', 'bar']);
+		emitter.relayEventsFrom(origin, ['foo', 'bar'], 'baz_');
+
+		let emitted = false,
+			arg1 = null,
+			arg2 = null;
+		emitter.on('baz_foo', (a, b) => {
+			emitted = true;
+			arg1 = a;
+			arg2 = b;
+		});
+		origin.emit('foo', true, false);
+
+		expect(emitted).to.be.true;
+		expect(arg1).to.be.true;
+		expect(arg2).to.be.false;
+	});
+
+	it('"once" usage', function() {
+		const emitter = this.emitter;
+
+		let emitted = 0,
+			caughtError = false;
+		emitter.once('foo', () => {
+			emitted++;
+		});
+		try {
+			emitter.emit('foo');
+		} catch(e) {
+			// Event was not yet registered!
+			caughtError = true;
+		}
+
+		// Now register it
+		emitter.registerEvent('foo');
+
+		// Emit two events
+		emitter.emit('foo'); // increments
+		emitter.emit('foo'); // ignores
+
+		expect(caughtError).to.be.true;
+		expect(emitted).to.be.eq(1);
+	});
+
 	it('pauses events', function() {
 		const emitter = this.emitter;
 		let emitted = false;

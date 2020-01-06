@@ -176,6 +176,15 @@ function _defineProperty(obj, key, value) {
   return obj;
 }
 
+/**
+ * This takes the node.js 'events' package and adds the following functionality:
+ * - Registration/unregistration of events. Events cannot be emitted until registered.
+ * - Pausing / Resuming event emission. Paused events will be added to a queue, and
+ * can be optionally emitted at resumption of events.
+ * - Relaying of events from one object to another. A relayed event will appear to be emitted
+ * from the relaying object, not from the origin object.
+ *
+ */
 var EventEmitter =
   /*#__PURE__*/
   (function(_EE) {
@@ -229,6 +238,7 @@ var EventEmitter =
 
       _defineProperty(_assertThisInitialized(_this), "pauseEvents", function() {
         _this.eventsPaused = true;
+        return _assertThisInitialized(_this);
       });
 
       _defineProperty(
@@ -250,11 +260,44 @@ var EventEmitter =
           }
 
           _this._eventQueue = [];
+          return _assertThisInitialized(_this);
+        }
+      );
+
+      _defineProperty(
+        _assertThisInitialized(_this),
+        "relayEventsFrom",
+        function(origin, events) {
+          var prefix =
+            arguments.length > 2 && arguments[2] !== undefined
+              ? arguments[2]
+              : "";
+
+          if (_lodash.default.isString(events)) {
+            events = [events];
+          }
+
+          _lodash.default.each(events, function(event) {
+            var fullEventName = prefix + event,
+              oThis = _assertThisInitialized(_this); // Register the event in this object, so it can be fired
+
+            _this.registerEvent(fullEventName); // Add a listener to the origin
+
+            origin.on(event, function() {
+              // NOTE: Purposefully do not use an arrow-function, so we have access to arguments
+              // Emit the event from this object, passing on any arguments
+              oThis.emit.apply(
+                oThis,
+                [fullEventName].concat(Array.prototype.slice.call(arguments))
+              );
+            });
+          });
         }
       );
 
       _this._registeredEvents = [];
       _this._eventQueue = [];
+      _this._relayers = [];
       return _this;
     }
     /**
@@ -269,7 +312,7 @@ var EventEmitter =
       {
         key: "emit",
         value: function emit(name) {
-          // NOTE: Purposefully did not use an arrow-function, so we have access to arguments
+          // NOTE: Purposefully do not use an arrow-function, so we have access to arguments
           if (_lodash.default.indexOf(this._registeredEvents, name) === -1) {
             throw new Error('Event "' + name + '" is not registered.');
           }

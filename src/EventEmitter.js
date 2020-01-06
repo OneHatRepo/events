@@ -1,6 +1,15 @@
 import { EventEmitter as EE } from 'events';
 import _ from 'lodash';
 
+/**
+ * This takes the node.js 'events' package and adds the following functionality:
+ * - Registration/unregistration of events. Events cannot be emitted until registered.
+ * - Pausing / Resuming event emission. Paused events will be added to a queue, and
+ * can be optionally emitted at resumption of events.
+ * - Relaying of events from one object to another. A relayed event will appear to be emitted
+ * from the relaying object, not from the origin object.
+ * 
+ */
 export default class EventEmitter extends EE {
 	
 	constructor() {
@@ -8,6 +17,7 @@ export default class EventEmitter extends EE {
 
 		this._registeredEvents = [];
 		this._eventQueue = [];
+		this._relayers = [];
 	}
 
 	/**
@@ -17,7 +27,7 @@ export default class EventEmitter extends EE {
 	 * @param {array} name - Event name
 	 * @param {[params]} - Variable number of additional params
 	 */
-	emit(name) { // NOTE: Purposefully did not use an arrow-function, so we have access to arguments
+	emit(name) { // NOTE: Purposefully do not use an arrow-function, so we have access to arguments
 
 		if (_.indexOf(this._registeredEvents, name) === -1) {
 			throw new Error('Event "' + name + '" is not registered.');
@@ -76,17 +86,22 @@ export default class EventEmitter extends EE {
 	}
 
 	/**
-	 * Pauses all events. 
+	 * Pauses all events.
+	 * Chainable.
 	 * Any events emitted while paused will be added to a queue.
+	 * @return this
 	 */
 	pauseEvents = () => {
 		this.eventsPaused = true;
+		return this;
 	}
 
 	/**
-	 * Resumes all events. 
+	 * Resumes all events.
+	 * Chainable.
 	 * @param {boolean} emitQueuedEvents - Emit the events in queue? 
 	 * If false, then queued events will be discarded. Defaults to false. 
+	 * @return this
 	 */
 	resumeEvents = (emitQueuedEvents = false) => {
 		this.eventsPaused = false;
@@ -96,6 +111,31 @@ export default class EventEmitter extends EE {
 			})
 		}
 		this._eventQueue = [];
+		return this;
+	}
+
+	/**
+	 * Relays events from one object to another. A relayed event will appear to be emitted
+	 * from the relaying object (this), not from the origin object.
+	 */
+	relayEventsFrom = (origin, events, prefix = '') => {
+		if (_.isString(events)) {
+			events = [events];
+		}
+		_.each(events, (event) => {
+			const fullEventName = prefix + event,
+				oThis = this;
+
+			// Register the event in this object, so it can be fired
+			this.registerEvent(fullEventName);
+
+			// Add a listener to the origin
+			origin.on(event, function() { // NOTE: Purposefully do not use an arrow-function, so we have access to arguments
+
+				// Emit the event from this object, passing on any arguments
+				oThis.emit(fullEventName, ...arguments);
+			});
+		});
 	}
 
 }
