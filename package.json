@@ -1,8 +1,8 @@
 {
   "name": "@onehat/events",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Node.js 'events' module with extra enhancements",
-  "main": "dist/EventEmitter.js",
+  "main": "dist/EventEmitter.cjs",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
