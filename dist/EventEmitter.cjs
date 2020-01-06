@@ -297,7 +297,6 @@ var EventEmitter =
 
       _this._registeredEvents = [];
       _this._eventQueue = [];
-      _this._relayers = [];
       return _this;
     }
     /**

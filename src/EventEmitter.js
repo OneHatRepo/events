@@ -17,7 +17,6 @@ export default class EventEmitter extends EE {
 
 		this._registeredEvents = [];
 		this._eventQueue = [];
-		this._relayers = [];
 	}
 
 	/**
