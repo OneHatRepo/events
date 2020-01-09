@@ -295,6 +295,22 @@ var EventEmitter =
         }
       );
 
+      _defineProperty(_assertThisInitialized(_this), "addListeners", function(
+        events,
+        listener
+      ) {
+        _lodash.default.each(events, function(event) {
+          _this.on(event, listener);
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "ons", function(
+        events,
+        listener
+      ) {
+        return _this.addListeners(events, listener);
+      });
+
       _this._registeredEvents = [];
       _this._eventQueue = [];
       return _this;
@@ -304,7 +320,7 @@ var EventEmitter =
      * - Checks that event has been registered
      * - Checks that events are not currently paused. If so, adds the event to a queue
      * @param {array} name - Event name
-     * @param {[params]} - Variable number of additional params
+     * @param {...params} - Variable number of additional params
      */
 
     _createClass(EventEmitter, [
