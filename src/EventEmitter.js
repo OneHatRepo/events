@@ -137,4 +137,27 @@ export default class EventEmitter extends EE {
 		});
 	}
 
+
+	/**
+	 * Adds the same listener to multiple events.
+	 * 
+	 * Usage:
+	 * 
+	 * - const events = ['foo', 'bar'];
+	 * - const handler = () => {};
+	 * - emitter.addListeners(events, handler);
+	 */
+	addListeners = (events, listener) => {
+		_.each(events, (event) => {
+			this.on(event, listener);
+		});
+	}
+
+	/**
+	 * Alias for addListeners
+	 */
+	ons = (events, listener) => {
+		return this.addListeners(events, listener);
+	}
+
 }

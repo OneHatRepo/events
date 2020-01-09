@@ -141,6 +141,18 @@ describe('EventEmitter', function() {
 		expect(emitted).to.be.true;
 	});
 
+	it('addListeners', function() {
+		const emitter = this.emitter;
+		let emitted = 0;
+		emitter.registerEvents(['foo', 'bar']);
+		emitter.addListeners(['foo', 'bar'], () => {
+			emitted++;
+		});
+		emitter.emit('foo');
+		emitter.emit('bar');
+		expect(emitted).to.be.eq(2);
+	});
+
 	it.skip('cancels events', function() {
 		// NOT YET IMPLEMENTED
 		const emitter = this.emitter;
