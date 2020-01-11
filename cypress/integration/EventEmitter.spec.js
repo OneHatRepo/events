@@ -55,23 +55,29 @@ describe('EventEmitter', function() {
 	});
 
 	it('relayEventsFrom', function() {
-		const emitter = this.emitter,
-			origin = new EventEmitter();
-
-		// Set up relaying
-		origin.registerEvents(['foo', 'bar']);
-		emitter.relayEventsFrom(origin, ['foo', 'bar'], 'baz_');
-
+		const origin = new EventEmitter(),
+			relayer = new EventEmitter();
+		
+		// Register the events on origin object
+		origin.registerEvents(['foo', 'bar']); // events can be registered direclty on emitter object, rather than in a constructor
+		
+		// Set up relaying from origin to relayer
+		relayer.relayEventsFrom(origin, ['foo', 'bar'], 'baz_'); // third argument allows optionally prepending event name with a prefix
+		
+		// Assign event handler on the relayer object
 		let emitted = false,
 			arg1 = null,
 			arg2 = null;
-		emitter.on('baz_foo', (a, b) => {
+		relayer.on('baz_foo', (a, b) => {
 			emitted = true;
 			arg1 = a;
 			arg2 = b;
 		});
-		origin.emit('foo', true, false);
 
+		// Now emit the event on the origin
+		origin.emit('foo', true, false);
+		
+		// verify everything worked
 		expect(emitted).to.be.true;
 		expect(arg1).to.be.true;
 		expect(arg2).to.be.false;
@@ -129,15 +135,28 @@ describe('EventEmitter', function() {
 	});
 
 	it('resumes events, replaying queue', function() {
-		const emitter = this.emitter;
-		let emitted = false;
+
+		const emitter = new EventEmitter();
+
+		// Register event
 		emitter.registerEvent('foo');
+		
+		// Assign event handler
+		let emitted = false;
 		emitter.on('foo', () => {
 			emitted = true;
 		});
+		
+		// Pause the events
 		emitter.pauseEvents();
+		
+		// No events will be emitted now
+		// They are added to an internal queue
 		emitter.emit('foo');
-		emitter.resumeEvents(true);
+		expect(emitted).to.be.false;
+		
+		// Resume the events
+		emitter.resumeEvents(true); // true to replay queued events in order. false to discard queued events
 		expect(emitted).to.be.true;
 	});
 
@@ -151,6 +170,56 @@ describe('EventEmitter', function() {
 		emitter.emit('foo');
 		emitter.emit('bar');
 		expect(emitted).to.be.eq(2);
+	});
+
+	it('event bubbles', function() {
+		// Set up our classes
+		class Child extends EventEmitter {
+			constructor() {
+				super(...arguments);
+		
+				this.registerEvent('foo');
+			}
+		}
+		
+		class Parent extends EventEmitter {
+			constructor(child) {
+				super(...arguments);
+		
+				this.child = child;
+				this.relayEventsFrom(child, 'foo');
+			}
+		}
+		
+		// Instantiate a parent and a child in hierarchical relationship
+		const child = new Child(),
+			parent = new Parent(child);
+		
+		// Assign event handler for parent
+		let parentCount = 0;
+		parent.on('foo', () => {
+			parentCount++;
+		});
+
+		// Emit the event on the child
+		child.emit('foo'); // Event bubbles up to parent and is handled there!
+		expect(parentCount).to.be.eq(1);
+		
+
+		// Now, let's push this a bit further, with another level of hierarchy.
+		const grandparent = new Parent(parent);
+		
+		// Assign event handler for grandparent
+		let grandparentCount = 0;
+		grandparent.on('foo', () => {
+			grandparentCount++;
+		});
+
+		// Emit the event on the child again
+		child.emit('foo'); // Event bubbles up to *both parent and grandparent*
+		expect(parentCount).to.be.eq(2);
+		expect(grandparentCount).to.be.eq(1);
+
 	});
 
 	it.skip('cancels events', function() {
