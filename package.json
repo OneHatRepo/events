@@ -5,7 +5,7 @@
   "main": "dist/EventEmitter.cjs",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx cypress open --config-file ../cypress.json"
   },
   "repository": {
     "type": "git",
