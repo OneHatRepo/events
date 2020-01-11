@@ -72,7 +72,7 @@ const origin = new EventEmitter(),
 	relayer = new EventEmitter();
 
 // Register the events on origin object
-origin.registerEvents(['foo', 'bar']); // events can be registered direclty on emitter object, rather than in a constructor
+origin.registerEvents(['foo', 'bar']); // events can be registered directly on emitter object, rather than in a constructor
 
 // Set up relaying from origin to relayer
 relayer.relayEventsFrom(origin, ['foo', 'bar'], 'baz_'); // third argument allows optionally prepending event name with a prefix
