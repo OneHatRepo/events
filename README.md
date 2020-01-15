@@ -1,8 +1,8 @@
 # OneHat Events
 [@onehat/events](https://www.npmjs.com/package/@onehat/events)
 Takes the node.js [events](https://www.npmjs.com/package/events) package and adds the following functionality:
-- **Registration / unregistration of events.** Events cannot be emitted until registered. This helps with reigning in your events, and forces better design. Registered events can be inspected with *_registeredEvents*
-- **Pausing / resuming event emission.** Paused events will be added to a queue, and can be optionally emitted when events are resumed. Default is to discard events when resuming.
+- **Registration / unregistration of events.** Events cannot be emitted until registered. This gives more control over the events, and forces better design.
+- **Pausing / resuming event emission.** Paused events will be added to a queue, and can be optionally emitted when events are resumed. Default is to discard queued events when resuming.
 - **Relaying of events from one object to another.** A relayed event will appear to be emitted from the relaying object, not from the origin object.
 - **Event Bubbling.** Events can bubble up a hierarchy of classes or components.
 
@@ -116,7 +116,6 @@ class Parent extends EventEmitter {
 	constructor(child) {
 		super(...arguments);
 
-		this.child = child;
 		this.relayEventsFrom(child, 'foo');
 	}
 }

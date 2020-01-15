@@ -1,8 +1,8 @@
 {
   "name": "@onehat/events",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Node.js 'events' module with extra enhancements",
-  "main": "dist/EventEmitter.cjs",
+  "main": "src/EventEmitter.js",
   "type": "module",
   "scripts": {
     "test": "npx cypress open --config-file ../cypress.json"
@@ -23,8 +23,8 @@
     "eventDispatcher",
     "relayEvents",
     "relaying",
-	"listeners",
-	"bubbling"
+    "listeners",
+    "bubbling"
   ],
   "author": {
     "name": "Scott Spuler",
@@ -41,13 +41,13 @@
     "lodash": "^4.17.15"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.7",
-    "@babel/node": "^7.7.7",
-    "@babel/plugin-proposal-class-properties": "^7.7.4",
-    "@babel/plugin-transform-runtime": "^7.7.6",
-    "@babel/preset-env": "^7.7.7",
-    "@babel/register": "^7.7.7",
-    "@babel/runtime": "^7.7.7",
+    "@babel/core": "^7.8.3",
+    "@babel/node": "^7.8.3",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-transform-runtime": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "@babel/register": "^7.8.3",
+    "@babel/runtime": "^7.8.3",
     "@cypress/webpack-preprocessor": "^4.1.1",
     "babel-loader": "^8.0.6",
     "cypress": "^3.8.2",
