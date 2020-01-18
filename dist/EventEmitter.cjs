@@ -236,6 +236,14 @@ var EventEmitter =
         }
       );
 
+      _defineProperty(
+        _assertThisInitialized(_this),
+        "getRegisteredEvents",
+        function() {
+          return _this._registeredEvents;
+        }
+      );
+
       _defineProperty(_assertThisInitialized(_this), "pauseEvents", function() {
         _this.eventsPaused = true;
         return _assertThisInitialized(_this);
