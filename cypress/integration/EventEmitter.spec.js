@@ -32,6 +32,14 @@ describe('EventEmitter', function() {
 		expect(_.indexOf(emitter._registeredEvents, 'foo') === -1).to.be.true;
 	});
 
+	it('getRegisteredEvents', function() {
+		const emitter = this.emitter,
+			events = ['foo', 'bar'];
+		emitter.registerEvents(events);
+		const result = emitter.getRegisteredEvents();
+		expect(_.isEqual(result, events)).to.be.true;
+	});
+
 	it('denies unregistered events', function() {
 		const emitter = this.emitter;
 		let error = null;

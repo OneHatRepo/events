@@ -85,6 +85,14 @@ export default class EventEmitter extends EE {
 	}
 
 	/**
+	 * Gets array of names of all registered event types.
+	 * @return {array} _registeredEvents - Event names
+	 */
+	getRegisteredEvents = () => {
+		return this._registeredEvents;
+	}
+
+	/**
 	 * Pauses all events.
 	 * Chainable.
 	 * Any events emitted while paused will be added to a queue.
