@@ -20,6 +20,10 @@ export default class EventEmitter extends EE {
 		this.checkReturnValues = false;
 	}
 
+	static get CANCEL_EVENT() {
+		return -1;
+	}
+
 	/**
 	 * Decorates the standard emit() with the following functionality:
 	 * - Checks that event has been registered
@@ -40,7 +44,7 @@ export default class EventEmitter extends EE {
 		}
 
 		if (name !== 'error' && this.checkReturnValues) {
-			return this.emitAlt.apply(this, [...arguments]);
+			return this._emitAlt.apply(this, [...arguments]);
 		}
 
 		return super.emit(...arguments);
@@ -49,22 +53,66 @@ export default class EventEmitter extends EE {
 	/**
 	 * Replaces the standard emit() with a custom function, so we can utilize the return values of handlers.
 	 * @return {boolean} result - false if any of the handlers return false, otherwise true.
+	 * @private
 	 */
-	emitAlt(name) { // NOTE: Purposefully do not use an arrow-function, so we have access to arguments
+	_emitAlt(name) { // NOTE: Purposefully do not use an arrow-function, so we have access to arguments
 		const handlers = this._events[name],
 			args = _.slice(arguments, 1);
-		let results = true;
+		let results = true,
+			isCancel = false;
 
 		if (_.isFunction(handlers)) {
 			results = handlers.apply(this, args);
 		} else {
 			_.each(handlers, (handler) => {
 				let ret = handler.apply(this, args);
+				if (ret === this.CANCEL_EVENT) {
+					isCancel = true;
+					return false;
+				}
 				if (!ret) {
 					results = false;
 				}
 			});
 		}
+
+		if (isCancel) {
+			return false;
+		}
+
+		return results;
+	}
+
+	/**
+	 * Replacement for the standard emit() function with a custom async function, 
+	 * so we can utilize the return values of handlers in an async fashion.
+	 * @return {boolean} result - false if any of the handlers return false, otherwise true.
+	 */
+	emitAsync = async function(name) { // NOTE: Purposefully do not use an arrow-function, so we have access to arguments
+		const handlers = this._events[name],
+			args = _.slice(arguments, 1);
+		let results = true,
+			isCancel = false;
+
+		if (_.isFunction(handlers)) {
+			results = await handlers.apply(this, args);
+		} else {
+			await _.each(handlers, async (handler) => {
+				let ret = await handler.apply(this, args);
+				if (ret === this.CANCEL_EVENT) {
+					isCancel = true;
+					return false;
+				}
+				if (!ret) {
+					results = false;
+				}
+			});
+		}
+
+		if (isCancel) {
+			return false;
+		}
+		
 		return results;
 	}
 

@@ -230,22 +230,6 @@ describe('EventEmitter', function() {
 
 	});
 
-	it.skip('cancels events', function() {
-		// NOT YET IMPLEMENTED
-		const emitter = this.emitter;
-		let step = 0;
-		emitter.registerEvent('foo');
-		emitter.on('foo', () => {
-			step = 1;
-			return false;
-		});
-		emitter.on('foo', () => {
-			step = 2;
-		});
-		emitter.emit('foo');
-		expect(step).to.be.eq(1);
-	});
-
 	it('checkReturnValues & emitAlt', function() {
 		const emitter = this.emitter;
 		emitter.registerEvent('foo');
@@ -271,6 +255,22 @@ describe('EventEmitter', function() {
 		results = emitter.emit('foo');
 		expect(results).to.be.false;
 		expect(n).to.be.eq(2);
+	});
+
+	it('cancels events', function() {
+		const emitter = this.emitter;
+		emitter.registerEvent('foo');
+		emitter.setCheckReturnValues();
+		let step = 0;
+		emitter.on('foo', () => {
+			step = 1;
+			return emitter.CANCEL_EVENT;
+		});
+		emitter.on('foo', () => {
+			step = 2;
+		});
+		emitter.emit('foo');
+		expect(step).to.be.eq(1);
 	});
 
 	it('emitAlt check variable args', function() {
@@ -306,6 +306,34 @@ describe('EventEmitter', function() {
 		expect(b).to.be.eq(1);
 		expect(c).to.be.eq(2);
 
+	});
+
+	it('emitAsync', function() {
+		(async () => {
+			const emitter = this.emitter;
+			emitter.registerEvent('foo');
+			emitter.setCheckReturnValues();
+
+			// Check with one listener
+			let n = 0;
+			emitter.on('foo', () => {
+				n++;
+				return true;
+			});
+			let results = await emitter.emitAsync('foo');
+			expect(results).to.be.true;
+			expect(n).to.be.eq(1);
+
+			// Check with two listeners
+			emitter.on('foo', () => {
+				n++;
+				return false;
+			});
+			n = 0;
+			results = await emitter.emitAsync('foo');
+			expect(results).to.be.false;
+			expect(n).to.be.eq(2);
+		})();
 	});
 
 });
