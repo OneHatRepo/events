@@ -17,17 +17,18 @@ export default class EventEmitter extends EE {
 
 		this._registeredEvents = [];
 		this._eventQueue = [];
+		this.checkReturnValues = false;
 	}
 
 	/**
 	 * Decorates the standard emit() with the following functionality:
 	 * - Checks that event has been registered
 	 * - Checks that events are not currently paused. If so, adds the event to a queue
+	 * - Checks if it should actually use the event handler return values (see emitAlt)
 	 * @param {array} name - Event name
 	 * @param {...params} - Variable number of additional params
 	 */
 	emit(name) { // NOTE: Purposefully do not use an arrow-function, so we have access to arguments
-
 		if (_.indexOf(this._registeredEvents, name) === -1) {
 			throw new Error('Event "' + name + '" is not registered.');
 		}
@@ -38,7 +39,40 @@ export default class EventEmitter extends EE {
 			return;
 		}
 
+		if (name !== 'error' && this.checkReturnValues) {
+			return this.emitAlt.apply(this, [...arguments]);
+		}
+
 		return super.emit(...arguments);
+	}
+
+	/**
+	 * Replaces the standard emit() with a custom function, so we can utilize the return values of handlers.
+	 * @return {boolean} result - false if any of the handlers return false, otherwise true.
+	 */
+	emitAlt(name) { // NOTE: Purposefully do not use an arrow-function, so we have access to arguments
+		const handlers = this._events[name],
+			args = _.slice(arguments, 1);
+		let results = true;
+
+		if (_.isFunction(handlers)) {
+			results = handlers.apply(this, args);
+		} else {
+			_.each(handlers, (handler) => {
+				let ret = handler.apply(this, args);
+				if (!ret) {
+					results = false;
+				}
+			});
+		}
+		return results;
+	}
+
+	/**
+	 * Sets checkReturnValues, so we can utilize the return values of handlers.
+	 */
+	setCheckReturnValues = (bool = true) => {
+		this.checkReturnValues = bool;
 	}
 
 	/**

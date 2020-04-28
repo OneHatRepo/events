@@ -246,4 +246,66 @@ describe('EventEmitter', function() {
 		expect(step).to.be.eq(1);
 	});
 
+	it('checkReturnValues & emitAlt', function() {
+		const emitter = this.emitter;
+		emitter.registerEvent('foo');
+		emitter.setCheckReturnValues();
+
+		// Check with one listener
+		let n = 0;
+		emitter.on('foo', () => {
+			n++;
+			return true;
+		});
+		let results = emitter.emit('foo');
+		expect(results).to.be.true;
+		expect(n).to.be.eq(1);
+
+
+		// Check with two listeners
+		emitter.on('foo', () => {
+			n++;
+			return false;
+		});
+		n = 0;
+		results = emitter.emit('foo');
+		expect(results).to.be.false;
+		expect(n).to.be.eq(2);
+	});
+
+	it('emitAlt check variable args', function() {
+		const emitter = this.emitter;
+		emitter.registerEvent('foo');
+		emitter.setCheckReturnValues();
+
+		// Check with one listener
+		let a = null,
+			b = null,
+			c = null;
+		emitter.on('foo', (arg1, arg2, arg3) => {
+			if (arg1) {
+				a = arg1;
+			}
+			if (arg2) {
+				b = arg2;
+			}
+			if (arg3) {
+				c = arg3;
+			}
+		});
+		emitter.emit('foo', 1, 2);
+		expect(a).to.be.eq(1);
+		expect(b).to.be.eq(2);
+		expect(c).to.be.null;
+
+		a = null;
+		b = null;
+		c = null;
+		emitter.emit('foo', 3, 1, 2);
+		expect(a).to.be.eq(3);
+		expect(b).to.be.eq(1);
+		expect(c).to.be.eq(2);
+
+	});
+
 });

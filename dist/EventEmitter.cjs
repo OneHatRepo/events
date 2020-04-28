@@ -37,10 +37,6 @@ function _get(target, property, receiver) { if (typeof Reflect !== "undefined" &
 
 function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
 function _createSuper(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
@@ -50,6 +46,10 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -73,6 +73,11 @@ var EventEmitter = /*#__PURE__*/function (_EE) {
     _classCallCheck(this, EventEmitter);
 
     _this = _super.apply(this, arguments);
+
+    _defineProperty(_assertThisInitialized(_this), "setCheckReturnValues", function () {
+      var bool = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+      _this.checkReturnValues = bool;
+    });
 
     _defineProperty(_assertThisInitialized(_this), "registerEvent", function (name) {
       return _this.registerEvents([name]);
@@ -156,12 +161,14 @@ var EventEmitter = /*#__PURE__*/function (_EE) {
 
     _this._registeredEvents = [];
     _this._eventQueue = [];
+    _this.checkReturnValues = false;
     return _this;
   }
   /**
    * Decorates the standard emit() with the following functionality:
    * - Checks that event has been registered
    * - Checks that events are not currently paused. If so, adds the event to a queue
+   * - Checks if it should actually use the event handler return values (see emitAlt)
    * @param {array} name - Event name
    * @param {...params} - Variable number of additional params
    */
@@ -182,13 +189,44 @@ var EventEmitter = /*#__PURE__*/function (_EE) {
         return;
       }
 
+      if (name !== 'error' && this.checkReturnValues) {
+        return this.emitAlt.apply(this, Array.prototype.slice.call(arguments));
+      }
+
       return _get(_getPrototypeOf(EventEmitter.prototype), "emit", this).apply(this, arguments);
     }
     /**
-     * Registers a single event type to be used by this Class.
-     * Events must be registered before they can be emitted.
-     * @param {string} name - Event name
-     * @return {boolean} isChanged - Whether event was successfully added
+     * Replaces the standard emit() with a custom function, so we can utilize the return values of handlers.
+     * @return {boolean} result - false if any of the handlers return false, otherwise true.
+     */
+
+  }, {
+    key: "emitAlt",
+    value: function emitAlt(name) {
+      var _this3 = this;
+
+      // NOTE: Purposefully do not use an arrow-function, so we have access to arguments
+      var handlers = this._events[name],
+          args = _lodash.default.slice(arguments, 1);
+
+      var results = true;
+
+      if (_lodash.default.isFunction(handlers)) {
+        results = handlers.apply(this, args);
+      } else {
+        _lodash.default.each(handlers, function (handler) {
+          var ret = handler.apply(_this3, args);
+
+          if (!ret) {
+            results = false;
+          }
+        });
+      }
+
+      return results;
+    }
+    /**
+     * Sets checkReturnValues, so we can utilize the return values of handlers.
      */
 
   }]);
