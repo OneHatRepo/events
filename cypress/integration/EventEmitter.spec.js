@@ -257,6 +257,24 @@ describe('EventEmitter', function() {
 		expect(n).to.be.eq(2);
 	});
 
+	it('relayEvents with checkReturnValues', function() {
+		const origin = new EventEmitter(),
+			relayer = new EventEmitter();
+
+		origin.setCheckReturnValues();
+		relayer.setCheckReturnValues();
+
+		origin.registerEvent('foo');
+		relayer.relayEventsFrom(origin, ['foo']);
+		relayer.on('foo', (a, b) => {
+			return false;
+		});
+
+		const result = origin.emit('foo', true, false);
+		
+		expect(result).to.be.false;
+	});
+
 	it('cancels events', function() {
 		const emitter = this.emitter;
 		emitter.registerEvent('foo');

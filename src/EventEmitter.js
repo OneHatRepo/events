@@ -112,7 +112,7 @@ export default class EventEmitter extends EE {
 		if (isCancel) {
 			return false;
 		}
-		
+
 		return results;
 	}
 
@@ -222,7 +222,7 @@ export default class EventEmitter extends EE {
 			origin.on(event, function() { // NOTE: Purposefully do not use an arrow-function, so we have access to arguments
 
 				// Emit the event from this object, passing on any arguments
-				oThis.emit(fullEventName, ...arguments);
+				return oThis.emit(fullEventName, ...arguments);
 			});
 		});
 	}
