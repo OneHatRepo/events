@@ -167,6 +167,17 @@ export default class EventEmitter extends EE {
 	}
 
 	/**
+	 * Determines whether or not an event with supplied name is registered
+	 * @return {bool} isRegisteredEvent
+	 */
+	isRegisteredEvent = (name) => {
+		if (_.indexOf(this._registeredEvents, name) === -1) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * Gets array of names of all registered event types.
 	 * @return {array} _registeredEvents - Event names
 	 */
