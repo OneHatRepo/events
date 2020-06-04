@@ -32,6 +32,12 @@ describe('EventEmitter', function() {
 		expect(_.indexOf(emitter._registeredEvents, 'foo') === -1).to.be.true;
 	});
 
+	it('recognizes event is registered', function() {
+		const emitter = this.emitter;
+		emitter.registerEvent('foo');
+		expect(emitter.isRegisteredEvent('foo')).to.be.true;
+	});
+
 	it('getRegisteredEvents', function() {
 		const emitter = this.emitter,
 			events = ['foo', 'bar'];
