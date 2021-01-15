@@ -245,8 +245,8 @@ export default class EventEmitter extends EE {
 	 * Usage:
 	 * 
 	 * - const events = ['foo', 'bar'];
-	 * - const handler = () => {};
-	 * - emitter.addListeners(events, handler);
+	 * - const listener = () => {};
+	 * - emitter.addListeners(events, listener);
 	 */
 	addListeners = (events, listener) => {
 		_.each(events, (event) => {
@@ -259,6 +259,29 @@ export default class EventEmitter extends EE {
 	 */
 	ons = (events, listener) => {
 		return this.addListeners(events, listener);
+	}
+
+
+	/**
+	 * Removes the same listener to multiple events.
+	 * 
+	 * Usage:
+	 * 
+	 * - const events = ['foo', 'bar'];
+	 * - const listener = () => {};
+	 * - emitter.addListeners(events, listener);
+	 */
+	removeListeners = (events, listener) => {
+		_.each(events, (event) => {
+			this.off(event, listener);
+		});
+	}
+
+	/**
+	 * Alias for removeListeners
+	 */
+	offs = (events, listener) => {
+		return this.removeListeners(events, listener);
 	}
 
 }
