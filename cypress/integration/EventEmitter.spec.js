@@ -186,6 +186,20 @@ describe('EventEmitter', function() {
 		expect(emitted).to.be.eq(2);
 	});
 
+	it('removeListeners', function() {
+		const emitter = this.emitter;
+		let emitted = 0;
+		emitter.registerEvents(['foo', 'bar']);
+		const listener = () => {
+			emitted++;
+		};
+		emitter.addListeners(['foo', 'bar'], listener);
+		emitter.removeListeners(['foo', 'bar'], listener);
+		emitter.emit('foo');
+		emitter.emit('bar');
+		expect(emitted).to.be.eq(0);
+	});
+
 	it('event bubbles', function() {
 		// Set up our classes
 		class Child extends EventEmitter {
