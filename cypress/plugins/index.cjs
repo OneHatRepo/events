@@ -1,7 +1,7 @@
 const webpack = require('@cypress/webpack-preprocessor'),
 	webpackOptions = {
 		mode: 'development',
-		devtool: 'cheap-module-source-map', // See https://survivejs.com/webpack/building/source-maps/
+		devtool: 'module-source-map', // See https://survivejs.com/webpack/building/source-maps/
 		module: {
 			rules: [
 				{
@@ -21,7 +21,7 @@ const webpack = require('@cypress/webpack-preprocessor'),
 					},
 				}
 			]
-		}
+		}	
 	};
 
 module.exports = (on, config) => {
