@@ -8,7 +8,6 @@ import _ from 'lodash';
  * can be optionally emitted at resumption of events.
  * - Relaying of events from one object to another. A relayed event will appear to be emitted
  * from the relaying object, not from the origin object.
- * 
  */
 export default class EventEmitter extends EE {
 	
@@ -88,7 +87,7 @@ export default class EventEmitter extends EE {
 	 * so we can utilize the return values of handlers in an async fashion.
 	 * @return {boolean} result - false if any of the handlers return false, otherwise true.
 	 */
-	emitAsync = async function(name) { // NOTE: Purposefully do not use an arrow-function, so we have access to arguments
+	 async emitAsync(name) {
 		const handlers = this._events[name],
 			args = _.slice(arguments, 1);
 		let results = true,
