@@ -118,7 +118,7 @@ export default class EventEmitter extends EE {
 	/**
 	 * Sets checkReturnValues, so we can utilize the return values of handlers.
 	 */
-	setCheckReturnValues = (bool = true) => {
+	setCheckReturnValues(bool = true) {
 		this.checkReturnValues = bool;
 	}
 
@@ -128,7 +128,7 @@ export default class EventEmitter extends EE {
 	 * @param {string} name - Event name
 	 * @return {boolean} isChanged - Whether event was successfully added
 	 */
-	registerEvent = (name) => {
+	registerEvent(name) {
 		return this.registerEvents([name]);
 	}
 
@@ -138,7 +138,7 @@ export default class EventEmitter extends EE {
 	 * @param {array} names - Event names
 	 * @return {boolean} isChanged - Whether (any) events were successfully added
 	 */
-	registerEvents = (names) => {
+	registerEvents(names) {
 		const count = this._registeredEvents.length;
 		this._registeredEvents = _.uniq(_.concat(this._registeredEvents, names));
 		return this._registeredEvents.length !== count;
@@ -149,7 +149,7 @@ export default class EventEmitter extends EE {
 	 * @param {string} name - Event name
 	 * @return {boolean} isChanged - Whether event was successfully removed
 	 */
-	unregisterEvent = (name) => {
+	unregisterEvent(name) {
 		return this.unregisterEvents([name]);
 	}
 
@@ -159,7 +159,7 @@ export default class EventEmitter extends EE {
 	 * @param {array} names - Event names
 	 * @return {boolean} isChanged - Whether (any) events were successfully removed
 	 */
-	unregisterEvents = (names) => {
+	unregisterEvents(names) {
 		const count = this._registeredEvents.length;
 		_.pullAll(this._registeredEvents, names);
 		return this._registeredEvents.length !== count;
@@ -169,7 +169,7 @@ export default class EventEmitter extends EE {
 	 * Determines whether or not an event with supplied name is registered
 	 * @return {bool} isRegisteredEvent
 	 */
-	isRegisteredEvent = (name) => {
+	isRegisteredEvent(name) {
 		if (_.indexOf(this._registeredEvents, name) === -1) {
 			return false;
 		}
@@ -180,7 +180,7 @@ export default class EventEmitter extends EE {
 	 * Gets array of names of all registered event types.
 	 * @return {array} _registeredEvents - Event names
 	 */
-	getRegisteredEvents = () => {
+	getRegisteredEvents() {
 		return this._registeredEvents;
 	}
 
@@ -190,7 +190,7 @@ export default class EventEmitter extends EE {
 	 * Any events emitted while paused will be added to a queue.
 	 * @return this
 	 */
-	pauseEvents = () => {
+	pauseEvents() {
 		this.eventsPaused = true;
 		return this;
 	}
@@ -202,7 +202,7 @@ export default class EventEmitter extends EE {
 	 * If false, then queued events will be discarded. Defaults to false. 
 	 * @return this
 	 */
-	resumeEvents = (emitQueuedEvents = false) => {
+	resumeEvents(emitQueuedEvents = false) {
 		this.eventsPaused = false;
 		if (emitQueuedEvents) {
 			_.forEach(this._eventQueue, (args) => {
@@ -217,7 +217,7 @@ export default class EventEmitter extends EE {
 	 * Relays events from one object to another. A relayed event will appear to be emitted
 	 * from the relaying object (this), not from the origin object.
 	 */
-	relayEventsFrom = (origin, events, prefix = '') => {
+	relayEventsFrom(origin, events, prefix = '') {
 		if (_.isString(events)) {
 			events = [events];
 		}
@@ -247,7 +247,7 @@ export default class EventEmitter extends EE {
 	 * - const listener = () => {};
 	 * - emitter.addListeners(events, listener);
 	 */
-	addListeners = (events, listener) => {
+	addListeners(events, listener) {
 		_.each(events, (event) => {
 			this.on(event, listener);
 		});
@@ -256,7 +256,7 @@ export default class EventEmitter extends EE {
 	/**
 	 * Alias for addListeners
 	 */
-	ons = (events, listener) => {
+	ons(events, listener) {
 		return this.addListeners(events, listener);
 	}
 
@@ -270,7 +270,7 @@ export default class EventEmitter extends EE {
 	 * - const listener = () => {};
 	 * - emitter.addListeners(events, listener);
 	 */
-	removeListeners = (events, listener) => {
+	removeListeners(events, listener) {
 		_.each(events, (event) => {
 			this.off(event, listener);
 		});
@@ -279,7 +279,7 @@ export default class EventEmitter extends EE {
 	/**
 	 * Alias for removeListeners
 	 */
-	offs = (events, listener) => {
+	offs(events, listener) {
 		return this.removeListeners(events, listener);
 	}
 
